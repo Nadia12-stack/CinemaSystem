@@ -12,7 +12,7 @@ namespace CinemaSystem.Models
         public string Img { get; set; } = "defaultImg.png"; 
         public int MovieId { get; set; }
         public Movie Movie { get; set; } = null!;
-        //public int CinemaId { get; set; }
-        //public Cinema? cinemaId { get; set; }
+        //public int ActorId { get; set; }
+        //public Actor? actorId { get; set; }
     }
 }

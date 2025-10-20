@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public StatusType Status { get; set; }
+        public bool Status { get; set; }
         public decimal Price { get; set; }
         public decimal Discount { get; set; }//On Ticket
         public double Rate { get; set; }
@@ -18,7 +18,7 @@
         public int BrandId { get; set; }
         public Cinema Brand { get; set; } = null!;
 
-        public List<Actor>? actors { get; set; }
-        public List<MovieSubImage>? movieSubImages { get; set; }
+        public List<Actor> actors { get; set; } = null!;
+        public List<MovieSubImage> movieSubImages { get; set; } = null!;
     }
 }
