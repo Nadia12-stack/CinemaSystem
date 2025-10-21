@@ -16,29 +16,29 @@ namespace CinemaSystem.Areas.Admin.Controllers
             var movies = _context.Movies.AsNoTracking().AsQueryable();
 
             // Add Filter
-            movies = movies.Include(e => e.Category).Include(e => e.Brand);
+            movies = movies.Include(e => e.Category).Include(e => e.MovieCinemas);
 
             #region Filter Movie
             // Add Filter 
-            if (filterMovieVM.name is not null)
-            {
-                movies = movies.Where(e => e.Name.Contains(filterMovieVM.name.Trim()));
-                ViewBag.name = filterMovieVM.name;
-            }
+            //if (filterMovieVM.name is not null)
+            //{
+            //    movies = movies.Where(e => e.Name.Contains(filterMovieVM.name.Trim()));
+            //    ViewBag.name = filterMovieVM.name;
+            //}
 
            
 
-            if (filterMovieVM.categoryId is not null)
-            {
-                movies = movies.Where(e => e.CategoryId == filterMovieVM.categoryId);
-                ViewBag.categoryId = filterMovieVM.categoryId;
-            }
+            //if (filterMovieVM.categoryId is not null)
+            //{
+            //    movies = movies.Where(e => e.CategoryId == filterMovieVM.categoryId);
+            //    ViewBag.categoryId = filterMovieVM.categoryId;
+            //}
 
-            if (filterMovieVM.cinemaId is not null)
-            {
-                movies = movies.Where(e => e.BrandId == filterMovieVM.cinemaId);
-                ViewBag.brandId = filterMovieVM.cinemaId;
-            }
+            //if (filterMovieVM.cinemaId is not null)
+            //{
+            //    movies = movies.Where(e => e.CinemaId == filterMovieVM.cinemaId);
+            //    ViewBag.brandId = filterMovieVM.cinemaId;
+            //}
 
          
 
@@ -149,7 +149,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var movie = _context.Movies.Include(e => e.actors).Include(e => e.movieSubImages).FirstOrDefault(e => e.Id == id);
+            var movie = _context.Movies.Include(e => e.MovieActors).Include(e => e.movieSubImages).FirstOrDefault(e => e.Id == id);
 
             if (movie is null)
                 return RedirectToAction("NotFoundPage", "Home");
@@ -170,7 +170,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(Movie movie, IFormFile? img, List<IFormFile>? subImgs, string[] actors)
         {
-            var movieInDb = _context.Movies.Include(e => e.actors).AsNoTracking().FirstOrDefault(e => e.Id == movie.Id);
+            var movieInDb = _context.Movies.Include(e => e.MovieActors).AsNoTracking().FirstOrDefault(e => e.Id == movie.Id);
             if(movieInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
@@ -238,7 +238,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
         public IActionResult Delete(int id)
         {
-            var movie = _context.Movies.Include(e=>e.actors).Include(e=>e.movieSubImages).FirstOrDefault(e => e.Id == id);
+            var movie = _context.Movies.Include(e=>e.Id).Include(e=>e.movieSubImages).FirstOrDefault(e => e.Id == id);
 
             if (movie is null)
                 return RedirectToAction("NotFoundPage", "Home");

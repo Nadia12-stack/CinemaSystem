@@ -15,10 +15,12 @@
 
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
-        public int BrandId { get; set; }
-        public Cinema Brand { get; set; } = null!;
 
-        public List<Actor> actors { get; set; } = null!;
+        public List<MovieActor> MovieActors { get; set; } = new();
+
+        
         public List<MovieSubImage> movieSubImages { get; set; } = null!;
+        public List<MovieCinema> MovieCinemas { get; set; } = new();
+
     }
 }

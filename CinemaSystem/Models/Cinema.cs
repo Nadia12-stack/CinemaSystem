@@ -12,6 +12,7 @@ namespace CinemaSystem.Models
 
         public string Img { get; set; } = "defaultImg.png";
         //public List<Movie> Movies { get; set; } = new();
+        public List<MovieCinema> MovieCinemas { get; set; } = new();
 
     }
 }

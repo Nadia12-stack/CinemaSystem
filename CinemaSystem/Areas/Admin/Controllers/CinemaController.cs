@@ -40,17 +40,17 @@ namespace CinemaSystem.Areas.Admin.Controllers
                 return View(createCinemaVM);
             }
 
-          
+
 
             Cinema cinema = createCinemaVM.Adapt<Cinema>();
 
             if (createCinemaVM.Img is not null && createCinemaVM.Img.Length > 0)
             {
                 // Save Img in wwwroot
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(createCinemaVM.Img.FileName); 
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(createCinemaVM.Img.FileName);
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
 
-                using(var stream = System.IO.File.Create(filePath))
+                using (var stream = System.IO.File.Create(filePath))
                 {
                     createCinemaVM.Img.CopyTo(stream);
                 }
@@ -77,7 +77,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
             if (cinema is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-         
+
 
             return View(cinema.Adapt<UpdateCinemaVM>());
         }
@@ -91,16 +91,16 @@ namespace CinemaSystem.Areas.Admin.Controllers
             }
 
             var cinemaInDb = _context.Cinemas.AsNoTracking().FirstOrDefault(e => e.Id == updateCinemaVM.Id);
-            if(cinemaInDb is null)
+            if (cinemaInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            
+
 
             Cinema cinema = updateCinemaVM.Adapt<Cinema>();
 
             if (updateCinemaVM.NewImg is not null)
             {
-                if(updateCinemaVM.NewImg.Length > 0)
+                if (updateCinemaVM.NewImg.Length > 0)
                 {
                     // Save Img in wwwroot
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(updateCinemaVM.NewImg.FileName); // 30291jsfd4-210klsdf32-4vsfksgs.png
@@ -113,7 +113,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
                     // Remove old Img in wwwroot
                     var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", cinemaInDb.Img);
-                    if(System.IO.File.Exists(oldPath))
+                    if (System.IO.File.Exists(oldPath))
                     {
                         System.IO.File.Delete(oldPath);
                     }

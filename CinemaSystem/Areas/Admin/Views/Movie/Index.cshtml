@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Movie>
+﻿@* @model IEnumerable<Movie> *@
 
 
 
@@ -49,12 +49,12 @@
                         <!-- Brand -->
                         <div class="col-md-2">
                             <select name="brandId" class="form-control">
-                                <option value="">--Select Brand--</option>
+                                <option value="">--Select cinema--</option>
                                 @if (ViewData["cinemas"] is IEnumerable<Cinema> cinemas)
                                 {
                                     foreach (var item in cinemas)
                                     {
-                                        if (item.Id == ViewBag.brandId)
+                                        if (item.Id == ViewBag.CinemaId)
                                         {
                                             <option value="@item.Id" selected>@item.Name</option>
                                         }
@@ -133,7 +133,7 @@
                             <th scope="row">@item.Id</th>
                             <td>@item.Name</td>
                             <td>@item.Category.Name</td>
-                            <td>@item.Brand.Name</td>
+                            <td>@item.Cinema.Name</td>
                             <td>@item.Price.ToString("c")</td>
                            
                             @if (item.Status)

@@ -1,4 +1,4 @@
-﻿@model MovieVM
+﻿@* @model MovieVM *@
 
 <div class="container">
     <div class="row mb-3 align-items-center my-3">
@@ -68,10 +68,10 @@
                     <label for="Actor" class="form-label">Actor</label>
 
                     <div id="colorContainer">
-                        @foreach(var item in Model.Movie.actors)
+                        @foreach(var item in Model.Movie.MovieActors)
                         {
                             <div class="mb-2 d-flex align-item-center">
-                                <input type="color" class="form-control form-control-color" name="Actors" value="@item.Id">
+                                <input type="color" class="form-control form-control-color" name="Actors" value="@item.ActorId">
                                 <button type="Button" class="btn btn-danger btn-sm removeActor">X</button>
                             </div>
                         }
@@ -102,7 +102,7 @@
                     <select name="BrandId" class="form-select">
                         @foreach (var item in Model.Cinemas)
                         {
-                            @if (item.Id == Model.Movie.BrandId)
+                            @if (item.Id == Model.Movie.MovieCinemas.CinemaId)
                             {
                                 <option value="@item.Id" selected>@item.Name</option>
                             }
