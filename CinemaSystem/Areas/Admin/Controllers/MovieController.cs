@@ -56,7 +56,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
             // Pagination
             ViewBag.TotalPages = Math.Ceiling(movies.Count() / 8.0);
             ViewBag.CurrentPage = page;
-            movies = movies.Skip((page - 1) * 8).Take(8); // 0 .. 8 
+            movies = movies.Skip((page - 1) * 8).Take(8); 
             #endregion
 
             return View(movies.AsEnumerable());
@@ -126,19 +126,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
                     _context.SaveChanges();
                 }
 
-                if (actors.Any())
-                {
-                    foreach (var item in actors)
-                    {
-                        _context.Actors.Add(new()
-                        {
-                            Name = item,
-                            MovieId = movieCreated.Entity.Id,
-                        });
-                    }
-
-                    _context.SaveChanges();
-                }
+               
 
                 //Response.Cookies.Append("success-notification", "Add Movie Successfully");
                 TempData["success-notification"] = "Add Movie Successfully";
@@ -154,7 +142,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             }
 
-            //return View(nameof(Index));
+            
             return RedirectToAction(nameof(Index));
         }
 
@@ -236,25 +224,6 @@ namespace CinemaSystem.Areas.Admin.Controllers
                     movie.movieSubImages.Add(new()
                     {
                         Img = fileName,
-                        MovieId = movie.Id,
-                    });
-                }
-
-                _context.SaveChanges();
-            }
-
-
-            if (actors.Any())
-            {
-                _context.Actors.RemoveRange(movieInDb.actors);
-
-                movie.actors = new List<Actor>();
-
-                foreach (var item in actors)
-                {
-                    movie.actors.Add(new()
-                    {
-                        Name = item,
                         MovieId = movie.Id,
                     });
                 }

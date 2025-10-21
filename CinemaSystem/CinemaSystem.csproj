@@ -9,6 +9,10 @@
     <UserSecretsId>557c5bfe-3d4f-41be-afe1-ba772704e159</UserSecretsId>
   </PropertyGroup>
 
+
+
+
+
   <ItemGroup>
     <ContainerPort Include="8081" />
   </ItemGroup>
@@ -24,5 +28,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="wwwroot\Admin\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="Areas\Admin\Views\Home\changelog.cshtml" />
+	  <None Include="Areas\Admin\Views\Home\index.cshtml" />
+	  <None Include="Areas\Admin\Views\Home\widgets.cshtml" />
 	</ItemGroup>
 </Project>

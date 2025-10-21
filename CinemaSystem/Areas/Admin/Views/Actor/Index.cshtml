@@ -1,12 +1,14 @@
-﻿@model IEnumerable<Actor>
+﻿<div class="container">
 
-<div class="container">
+   
+    
+
     <div class="row mb-3 align-items-center my-3">
         <div class="col-md-6">
-            <h2 class="display-6">All Actors</h2>
+            <h2 class="display-6">All Brands</h2>
         </div>
         <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
-            <a href="/Admin/Actor/Create" class="btn btn-success">Create</a>
+            <a href="/Admin/Brand/Create" class="btn btn-success">Create</a>
         </div>
     </div>
 
@@ -37,8 +39,8 @@
                                 <td><span class="badge text-bg-danger">InActive</span></td>
                             }
                             <td>
-                                <a href="/Admin/Actor/Edit/@item.Id" type="button" class="btn btn-warning">Edit</a>
-                                <a href="/Admin/Actor/Delete/@item.Id" class="btn btn-danger btn-delete">Delete</a>
+                                <a href="/Admin/Brand/Edit/@item.Id" type="button" class="btn btn-warning">Edit</a>
+                                <a href="/Admin/Brand/Delete/@item.Id" class="btn btn-danger btn-delete">Delete</a>
                             </td>
                         </tr>
                     }

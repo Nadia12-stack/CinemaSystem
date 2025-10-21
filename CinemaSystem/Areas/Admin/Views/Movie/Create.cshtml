@@ -37,24 +37,20 @@
                     <label for="Discount" class="form-label">Discount</label>
                     <input class="form-control" name="Discount">
                 </div>
-                <div class="mb-3">
-                    <label for="Quantity" class="form-label">Quantity</label>
-                    <input class="form-control" name="Quantity">
-                </div>
-                <div class="mb-3">
+               @* List Of Actors *@
+                @* <div class="mb-3">
                     <label for="Actor" class="form-label">Actor</label>
                     
                     <div id="colorContainer">
                         <div class="mb-2 d-flex align-item-center">
                             <input type="color" class="form-control form-control-color" name="Actors">
                         </div>
-                    </div>
+                    </div> *@
 
-                    <button type="button" id="addButtonActor" class="btn btn-outline-primary">+ Add New Actor</button>
-                </div>
+                @*     <button type="button" id="addButtonActor" class="btn btn-outline-primary">+ Add New Actor</button>
+                </div> *@
                 <div class="mb-3">
                     <label for="CategoryId" class="form-label">Category</label>
-                    @* <input class="form-control" name="CategoryId"> *@
                     <select name="CategoryId" class="form-select">
                         @foreach(var item in Model.Categories)
                         {
@@ -62,6 +58,17 @@
                         }
                     </select>
                 </div>
+
+                <div class="mb-3">
+                    <label for="ActorId" class="form-label">Actors</label>
+                    <select name="ActorId" class="form-select" multiple>
+                        @foreach (var item in Model.actors)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+
                 <div class="mb-3">
                     <label for="BrandId" class="form-label">Brand</label>
                     @* <input class="form-control" name="BrandId"> *@
