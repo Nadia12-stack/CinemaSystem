@@ -1,59 +1,62 @@
-﻿@model UpdateCinemaVM
+﻿@model Actor
 
-<div class="container">
-    <div class="row mb-3 align-items-center my-3">
-        <div class="col-md-6">
-            <h2 class="display-6">Edit new Brand</h2>
+<div class="container mt-4">
+    <h4 class="fw-bold">✏️ Edit Actor</h4>
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-    </div>
 
-    <div class="row my-3">
-        <div class="col-12">
-            <form method="post" enctype="multipart/form-data">
-                @* <input type="hidden" name="id" value="@Model.Id"> *@
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input class="form-control" asp-for="Name">
-                </div>
-                <div class="mb-3">
-                    <label for="Img" class="form-label">Img</label>
-                    <input type="file" class="form-control" name="NewImg" accept="image/*" onchange="previewImage(event)">
-                </div>
-
-                <div class="mb-3">
-                    <img id="preview"
-                         src="~/images/@Model.Img"
-                         alt="Current Image"
-                         style="max-width: 200px; border:1px solid #ccc; padding:5px; border-radius:10px;" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <div class="form-floating">
-                        <textarea class="form-control" placeholder="Leave a description here" style="height: 100px" asp-for="Description"></textarea>
-                        <label for="description">You Description Here...</label>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="Status" class="form-select">
-                        @if(Model.Status)
-                        {
-                            <option value="true" selected>Active</option>
-                            <option value="false">InActive</option>
-                        }
-                        else
-                        {
-                            <option value="true">Active</option>
-                            <option value="false" selected>InActive</option>
-                        }
-                        
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label asp-for="Awards" class="form-label">Awards</label>
+            <input asp-for="Awards" class="form-control" />
+            <span asp-validation-for="Awards" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BirthDate" class="form-label">Birth Date</label>
+            <input asp-for="BirthDate" type="date" class="form-control" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Nationality" class="form-label">Nationality</label>
+            <input asp-for="Nationality" class="form-control" />
+            <span asp-validation-for="Nationality" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Current Image</label><br />
+            <img id="preview" src="~/images/actors/@Model.Img" alt="Actor Image"
+                 style="max-width: 200px; border:1px solid #ccc; padding:5px; border-radius:10px;" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Upload New Image</label>
+            <input type="file" name="img" class="form-control" accept="image/*" onchange="previewImage(event)" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label">Status</label>
+            <select asp-for="Status" class="form-select">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+    </form>
 </div>
 
 <script>
@@ -63,14 +66,14 @@
 
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result; // الصورة الجديدة
+            reader.onload = function (e) {
+                preview.src = e.target.result;
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 </script>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial">
-}
+@* @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@

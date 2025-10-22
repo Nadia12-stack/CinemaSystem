@@ -15,12 +15,17 @@ namespace CinemaSystem.DataAccess
         public DbSet<Actor> Actors { get; set; }
         public DbSet<MovieSubImage> MovieSubImages { get; set; }
 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+                    : base(options)
+        {
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=CinemaSystem;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

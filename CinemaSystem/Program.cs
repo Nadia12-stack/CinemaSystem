@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace CinemaSystem
 {
     public class Program
@@ -8,6 +10,8 @@ namespace CinemaSystem
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -24,12 +28,11 @@ namespace CinemaSystem
 
             app.UseAuthorization();
 
-            app.MapStaticAssets();
-            
+
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+                pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
+               
 
 
             app.Run();

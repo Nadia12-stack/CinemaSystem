@@ -1,63 +1,55 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CinemaSystem.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class MovieController : Controller
     {
-        ApplicationDbContext _context = new();
+        private readonly ApplicationDbContext _context;
+
+        public MovieController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         public IActionResult Index(FilterMovieVM filterMovieVM, int page = 1)
         {
-           
-            var movies = _context.Movies.AsNoTracking().AsQueryable();
+            var movies = _context.Movies
+                .Include(e => e.Category)
+                .Include(e => e.MovieCinemas)
+                .Include(e => e.MovieActors).ThenInclude(ma => ma.Actor)
+                .AsNoTracking()
+                .AsQueryable();
 
-            // Add Filter
-            movies = movies.Include(e => e.Category).Include(e => e.MovieCinemas);
+            // Filters 
+            if (!string.IsNullOrWhiteSpace(filterMovieVM.name))
+            {
+                movies = movies.Where(e => e.Name.Contains(filterMovieVM.name.Trim()));
+                ViewBag.name = filterMovieVM.name;
+            }
 
-            #region Filter Movie
-            // Add Filter 
-            //if (filterMovieVM.name is not null)
-            //{
-            //    movies = movies.Where(e => e.Name.Contains(filterMovieVM.name.Trim()));
-            //    ViewBag.name = filterMovieVM.name;
-            //}
+            if (filterMovieVM.categoryId is not null)
+            {
+                movies = movies.Where(e => e.CategoryId == filterMovieVM.categoryId);
+                ViewBag.categoryId = filterMovieVM.categoryId;
+            }
 
-           
+            if (filterMovieVM.cinemaId is not null)
+            {
+                movies = movies.Where(e => e.MovieCinemas.Any(c => c.CinemaId == filterMovieVM.cinemaId));
+                ViewBag.cinemaId = filterMovieVM.cinemaId;
+            }
 
-            //if (filterMovieVM.categoryId is not null)
-            //{
-            //    movies = movies.Where(e => e.CategoryId == filterMovieVM.categoryId);
-            //    ViewBag.categoryId = filterMovieVM.categoryId;
-            //}
+          
+            // Categories & Cinemas
+            ViewBag.categories = _context.Categories.AsEnumerable();
+            ViewData["cinemas"] = _context.Cinemas.AsEnumerable();
 
-            //if (filterMovieVM.cinemaId is not null)
-            //{
-            //    movies = movies.Where(e => e.CinemaId == filterMovieVM.cinemaId);
-            //    ViewBag.brandId = filterMovieVM.cinemaId;
-            //}
-
-         
-
-            // Categories
-            var categories = _context.Categories;
-            //ViewData["categories"] = categories.AsEnumerable();
-            ViewBag.categories = categories.AsEnumerable();
-
-            // Cinemas
-            var cinemas = _context.Cinemas;
-            ViewData["cinemas"] = cinemas.AsEnumerable();
-            #endregion
-
-            #region Pagination
             // Pagination
             ViewBag.TotalPages = Math.Ceiling(movies.Count() / 8.0);
             ViewBag.CurrentPage = page;
-            movies = movies.Skip((page - 1) * 8).Take(8); 
-            #endregion
+            movies = movies.Skip((page - 1) * 8).Take(8);
 
             return View(movies.AsEnumerable());
         }
@@ -65,15 +57,15 @@ namespace CinemaSystem.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            // Categories
             var categories = _context.Categories;
-            // Cinemas
             var cinemas = _context.Cinemas;
+            var actors = _context.Actors;
 
             return View(new MovieVM
             {
                 Categories = categories.AsEnumerable(),
                 Cinemas = cinemas.AsEnumerable(),
+                actors = actors.AsEnumerable()
             });
         }
 
@@ -84,37 +76,29 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             try
             {
+                // Main Image
                 if (img is not null && img.Length > 0)
                 {
-                    // Save Img in wwwroot
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.FileName); // 30291jsfd4-210klsdf32-4vsfksgs.png
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
-
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        img.CopyTo(stream);
-                    }
-
-                    // Save Img in db
+                    var fileName = Guid.NewGuid() + Path.GetExtension(img.FileName);
+                    var filePath = Path.Combine("wwwroot/images", fileName);
+                    using var stream = System.IO.File.Create(filePath);
+                    img.CopyTo(stream);
                     movie.MainImg = fileName;
                 }
 
-                // Save movie in db
+                // Save Movie
                 var movieCreated = _context.Movies.Add(movie);
                 _context.SaveChanges();
 
-                if (img is not null && img.Length > 0)
+                // Sub Images
+                if (subImgs is not null)
                 {
                     foreach (var item in subImgs)
                     {
-                        // Save Img in wwwroot
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.FileName); // 30291jsfd4-210klsdf32-4vsfksgs.png
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movie_images", fileName);
-
-                        using (var stream = System.IO.File.Create(filePath))
-                        {
-                            img.CopyTo(stream);
-                        }
+                        var fileName = Guid.NewGuid() + Path.GetExtension(item.FileName);
+                        var filePath = Path.Combine("wwwroot/images/movie_images", fileName);
+                        using var stream = System.IO.File.Create(filePath);
+                        item.CopyTo(stream);
 
                         _context.MovieSubImages.Add(new()
                         {
@@ -126,77 +110,66 @@ namespace CinemaSystem.Areas.Admin.Controllers
                     _context.SaveChanges();
                 }
 
-               
-
-                //Response.Cookies.Append("success-notification", "Add Movie Successfully");
                 TempData["success-notification"] = "Add Movie Successfully";
-
                 transaction.Commit();
             }
-            catch(Exception ex)
+            catch
             {
-                // Logging
                 TempData["error-notification"] = "Error While Saving the movie";
-
                 transaction.Rollback();
-
             }
 
-            
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var movie = _context.Movies.Include(e => e.MovieActors).Include(e => e.movieSubImages).FirstOrDefault(e => e.Id == id);
+            var movie = _context.Movies
+                .Include(e => e.MovieActors)
+                .Include(e => e.movieSubImages)
+                .FirstOrDefault(e => e.Id == id);
 
             if (movie is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            // Categories
             var categories = _context.Categories;
-            // Cinemas
             var cinemas = _context.Cinemas;
+            var actors = _context.Actors;
 
             return View(new MovieVM
             {
                 Categories = categories.AsEnumerable(),
                 Cinemas = cinemas.AsEnumerable(),
-                Movie = movie,
+                actors = actors.AsEnumerable(),
+                Movie = movie
             });
         }
 
         [HttpPost]
         public IActionResult Edit(Movie movie, IFormFile? img, List<IFormFile>? subImgs, string[] actors)
         {
-            var movieInDb = _context.Movies.Include(e => e.MovieActors).AsNoTracking().FirstOrDefault(e => e.Id == movie.Id);
-            if(movieInDb is null)
+            var movieInDb = _context.Movies
+                .Include(e => e.MovieActors)
+                .AsNoTracking()
+                .FirstOrDefault(e => e.Id == movie.Id);
+
+            if (movieInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            if (img is not null)
+            // Main Image
+            if (img is not null && img.Length > 0)
             {
-                if(img.Length > 0)
-                {
-                    // Save Img in wwwroot
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(img.FileName); // 30291jsfd4-210klsdf32-4vsfksgs.png
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+                var fileName = Guid.NewGuid() + Path.GetExtension(img.FileName);
+                var filePath = Path.Combine("wwwroot/images", fileName);
+                using var stream = System.IO.File.Create(filePath);
+                img.CopyTo(stream);
 
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        img.CopyTo(stream);
-                    }
+                var oldPath = Path.Combine("wwwroot/images", movieInDb.MainImg);
+                if (System.IO.File.Exists(oldPath))
+                    System.IO.File.Delete(oldPath);
 
-                    // Remove old Img in wwwroot
-                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", movieInDb.MainImg);
-                    if(System.IO.File.Exists(oldPath))
-                    {
-                        System.IO.File.Delete(oldPath);
-                    }
-
-                    // Save Img in db
-                    movie.MainImg = fileName;
-                }
+                movie.MainImg = fileName;
             }
             else
             {
@@ -206,20 +179,17 @@ namespace CinemaSystem.Areas.Admin.Controllers
             _context.Movies.Update(movie);
             _context.SaveChanges();
 
+            // Sub Images
             if (subImgs is not null && subImgs.Count > 0)
             {
                 movie.movieSubImages = new List<MovieSubImage>();
 
                 foreach (var item in subImgs)
                 {
-                    // Save Img in wwwroot
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(item.FileName); // 30291jsfd4-210klsdf32-4vsfksgs.png
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movie_images", fileName);
-
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        item.CopyTo(stream);
-                    }
+                    var fileName = Guid.NewGuid() + Path.GetExtension(item.FileName);
+                    var filePath = Path.Combine("wwwroot/images/movie_images", fileName);
+                    using var stream = System.IO.File.Create(filePath);
+                    item.CopyTo(stream);
 
                     movie.movieSubImages.Add(new()
                     {
@@ -232,55 +202,47 @@ namespace CinemaSystem.Areas.Admin.Controllers
             }
 
             TempData["success-notification"] = "Update Movie Successfully";
-
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(int id)
         {
-            var movie = _context.Movies.Include(e=>e.Id).Include(e=>e.movieSubImages).FirstOrDefault(e => e.Id == id);
+            var movie = _context.Movies
+                .Include(e => e.movieSubImages)
+                .FirstOrDefault(e => e.Id == id);
 
             if (movie is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            // Remove old Img in wwwroot
-            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", movie.MainImg);
+            var oldPath = Path.Combine("wwwroot/images", movie.MainImg);
             if (System.IO.File.Exists(oldPath))
-            {
                 System.IO.File.Delete(oldPath);
-            }
 
             foreach (var item in movie.movieSubImages)
             {
-                var subImgOldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movie_images", item.Img);
+                var subImgOldPath = Path.Combine("wwwroot/images/movie_images", item.Img);
                 if (System.IO.File.Exists(subImgOldPath))
-                {
                     System.IO.File.Delete(subImgOldPath);
-                }
             }
-
 
             _context.Movies.Remove(movie);
             _context.SaveChanges();
 
             TempData["success-notification"] = "Delete Movie Successfully";
-
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult DeleteSubImg(int movieId, string Img)
         {
-            var movieSubImgInDb = _context.MovieSubImages.FirstOrDefault(e=>e.MovieId == movieId && e.Img == Img);
+            var movieSubImgInDb = _context.MovieSubImages
+                .FirstOrDefault(e => e.MovieId == movieId && e.Img == Img);
 
-            if(movieSubImgInDb is null)
+            if (movieSubImgInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            // Remove old Img in wwwroot
-            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movie_images", movieSubImgInDb.Img);
+            var oldPath = Path.Combine("wwwroot/images/movie_images", movieSubImgInDb.Img);
             if (System.IO.File.Exists(oldPath))
-            {
                 System.IO.File.Delete(oldPath);
-            }
 
             _context.Remove(movieSubImgInDb);
             _context.SaveChanges();
