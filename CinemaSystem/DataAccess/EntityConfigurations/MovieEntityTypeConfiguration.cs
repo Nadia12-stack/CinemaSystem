@@ -10,5 +10,6 @@ namespace CinemaSystem.DataAccess.EntityConfigurations
         {
             builder.HasKey(e => new { e.MovieId, e.Img });
         }
+
     }
 }

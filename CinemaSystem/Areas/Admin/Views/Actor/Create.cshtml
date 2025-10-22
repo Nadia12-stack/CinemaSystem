@@ -1,4 +1,5 @@
 ﻿@model Actor
+<link rel="stylesheet" href="~/css/actor.css" />
 
 <div class="container mt-4">
     <h4 class="fw-bold">👤 Create New Actor</h4>
@@ -40,10 +41,63 @@
                 <option value="false">Inactive</option>
             </select>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Social Media Links</label>
+            <div id="socialLinksContainer">
+                @for (int i = 0; i < Model.SocialLinks.Count; i++)
+                {
+                    <div class="d-flex gap-2 mb-2 align-items-center social-link-row">
+                        <input type="text" name="SocialLinks[@i].Platform" class="form-control" placeholder="Platform (e.g. Facebook)" value="@Model.SocialLinks[i].Platform" />
+                        <input type="url" name="SocialLinks[@i].Url" class="form-control" placeholder="URL" value="@Model.SocialLinks[i].Url" />
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSocialLink(this)">🗑️</button>
+                    </div>
+                }
+            </div>
+
+            <button type="button" class="btn btn-sm btn-secondary" onclick="addSocialLink()">➕ Add Link</button>
+        </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+
+
+    <script>
+        function addSocialLink() {
+            const container = document.getElementById("socialLinksContainer");
+            const index = container.children.length;
+            const div = document.createElement("div");
+            div.className = "d-flex gap-2 mb-2 align-items-center social-link-row";
+            div.innerHTML = `
+                <input type="text" name="SocialLinks[${index}].Platform" class="form-control" placeholder="Platform (e.g. Instagram)" />
+                <input type="url" name="SocialLinks[${index}].Url" class="form-control" placeholder="URL" />
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSocialLink(this)">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeSocialLink(button) {
+            button.parentElement.remove();
+        }
+
+        function validateSocialLinks() {
+            const rows = document.querySelectorAll(".social-link-row");
+            for (let row of rows) {
+                const platform = row.querySelector("input[name*='Platform']").value.trim();
+                const url = row.querySelector("input[name*='Url']").value.trim();
+                if (!platform || !url) {
+                    alert("Please fill in all social media fields.");
+                    return false;
+                }
+                if (!url.startsWith("http")) {
+                    alert("Please enter a valid URL.");
+                    return false;
+                }
+            }
+            return true;
+        
+    </script>
+
 
 @* @section Scripts {
     <partial name="_ValidationScriptsPartial">

@@ -1,4 +1,5 @@
 ﻿@model MovieVM
+<link rel="stylesheet" href="~/css/movie.css" />
 
 <div class="container">
     <h2 class="display-6 my-3">Edit Movie</h2>
@@ -20,12 +21,7 @@
         </div>
 
         <!-- Sub Images -->
-        <div class="mb-3">
-            <label>Sub Images</label>
-            <input class="form-control" type="file" name="subImgs" multiple />
-        </div>
-
-        @if (Model.MovieSubImages.Any())
+        @if (Model.MovieSubImages != null && Model.MovieSubImages.Any())
         {
             <div class="mb-3">
                 @foreach (var item in Model.MovieSubImages)
@@ -57,38 +53,77 @@
         </div>
 
         <!-- Actors -->
-        <div class="mb-3">
-            <label>Actors</label>
-            <select name="actors" class="form-select" multiple>
-                @foreach (var actor in Model.actors)
+        <select name="actors" class="form-select" multiple>
+            @if (Model.actors != null)
+            {
+                foreach (var actor in Model.actors)
                 {
-                    <option value="@actor.Id"
-                        if (Model.Movie.MovieActors.Any(a => a.ActorId == actor.Id))
+                    if (Model.Movie.MovieActors != null)
+                    {
+                        bool isSelected = false;
+                        foreach (var a in Model.Movie.MovieActors)
                         {
-                            <text>selected</text>
-                        }>
-                        @actor.Name
-                    </option>
+                            if (a.ActorId == actor.Id)
+                            {
+                                isSelected = true;
+                                break;
+                            }
+                        }
+
+                        if (isSelected)
+                        {
+                            <option value="@actor.Id" selected>@actor.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@actor.Id">@actor.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="@actor.Id">@actor.Name</option>
+                    }
                 }
-            </select>
-        </div>
+            }
+        </select>
+
 
         <!-- Cinemas -->
-        <div class="mb-3">
-            <label>Cinemas</label>
-            <select name="cinemaIds" class="form-select" multiple>
-                @foreach (var cinema in Model.Cinemas)
+        <select name="cinemaIds" class="form-select" multiple>
+            @if (Model.Cinemas != null)
+            {
+                foreach (var cinema in Model.Cinemas)
                 {
-                    <option value="@cinema.Id"
-                        if (Model.Movie.MovieCinemas.Any(c => c.CinemaId == cinema.Id))
+                    if (Model.Movie.MovieCinemas != null)
+                    {
+                        bool isSelected = false;
+                        foreach (var c in Model.Movie.MovieCinemas)
                         {
-                            <text>selected</text>
-                        }>
-                        @cinema.Name
-                    </option>
+                            if (c.CinemaId == cinema.Id)
+                            {
+                                isSelected = true;
+                                break;
+                            }
+                        }
+
+                        if (isSelected)
+                        {
+                            <option value="@cinema.Id" selected>@cinema.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@cinema.Id">@cinema.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="@cinema.Id">@cinema.Name</option>
+                    }
                 }
-            </select>
-        </div>
+            }
+        </select>
+
+
 
         <!-- Category -->
         <div class="col-md-2">

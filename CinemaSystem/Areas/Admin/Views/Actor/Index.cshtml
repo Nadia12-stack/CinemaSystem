@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Actor>
+<link rel="stylesheet" href="~/css/actor.css" />
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -10,10 +11,14 @@
         <thead class="table-light">
             <tr>
                 <th>#</th>
-                <th>Image</th>
                 <th>Name</th>
+                <th>Description</th>
+                <th>Awards</th>
                 <th>Status</th>
+                <th>Birth Date</th>
                 <th>Nationality</th>
+                <th>Categories</th>
+                <th>Social Links</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,10 +27,9 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>
-                        <img src="~/images/actors/@item.Img" alt="@item.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
-                    </td>
                     <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.Awards</td>
                     <td>
                         @if (item.Status)
                         {
@@ -36,7 +40,38 @@
                             <span class="badge bg-danger">Inactive</span>
                         }
                     </td>
+                    <td>@item.BirthDate.ToString("yyyy/MM/dd")</td>
                     <td>@item.Nationality</td>
+                    <td>
+                        @if (item.ActorCategories.Any())
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var cat in item.ActorCategories)
+                                {
+                                    <li>@cat.Category.Name</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">None</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.SocialLinks.Any())
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var link in item.SocialLinks)
+                                {
+                                    <li><a href="@link.Url" target="_blank">@link.Platform</a></li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">None</span>
+                        }
+                    </td>
                     <td>
                         <a href="/Admin/Actor/Edit/@item.Id" class="btn btn-sm btn-warning">✏️ Edit</a>
                         <a href="/Admin/Actor/Delete/@item.Id" class="btn btn-sm btn-danger btn-delete">🗑️ Delete</a>
@@ -46,12 +81,3 @@
         </tbody>
     </table>
 </div>
-
-
-@* @section Scripts {
-
-    <partial name="_NotificationPartial">
-
-} *@
-
-
