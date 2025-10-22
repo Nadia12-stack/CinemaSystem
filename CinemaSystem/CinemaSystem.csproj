@@ -9,6 +9,13 @@
     <UserSecretsId>557c5bfe-3d4f-41be-afe1-ba772704e159</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="wwwroot\Admin\**" />
+    <Content Remove="wwwroot\Admin\**" />
+    <EmbeddedResource Remove="wwwroot\Admin\**" />
+    <None Remove="wwwroot\Admin\**" />
+  </ItemGroup>
+
 
 
 
