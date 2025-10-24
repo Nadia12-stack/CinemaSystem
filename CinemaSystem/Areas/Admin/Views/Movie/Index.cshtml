@@ -1,69 +1,133 @@
 ﻿@model IEnumerable<Movie>
-
 <link rel="stylesheet" href="~/css/movie.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="container">
-    <div class="row mb-3 align-items-center my-3">
+<div class="container mt-4">
+    <div class="row mb-3 align-items-center">
         <div class="col-md-6">
-            <h2 class="display-6">All Movies</h2>
+            <h4 class="fw-bold">🎬 All Movies</h4>
         </div>
         <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
-            <a href="/Admin/Movie/Create" class="btn btn-success">Create</a>
+            <a href="/Admin/Movie/Create" class="btn btn-success">➕ Create</a>
         </div>
     </div>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Cinemas</th>
-                <th>Actors</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Name</td>
-                    <td>@item.Category.Name</td>
-                    <td>
-                        @if (item.MovieCinemas.Any())
-                        {
-                            @string.Join(", ", item.MovieCinemas.Select(c => c.Cinema.Name))
-                        }
-                        else
-                        {
-                            <span class="text-muted">No Cinemas</span>
-                        }
-                    </td>
-                    <td>
-                        @if (item.MovieActors.Any())
-                        {
-                            @string.Join(", ", item.MovieActors.Select(a => a.Actor.Name))
-                        }
-                        else
-                        {
-                            <span class="text-muted">No Actors</span>
-                        }
-                    </td>
-                    <td>@item.Price.ToString("c")</td>
-                    <td>
-                        <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
-                            @(item.Status ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td>
-                        <a href="/Admin/Movie/Edit/@item.Id" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="/Admin/Movie/Delete/@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div id="movieTable" data-list='{"valueNames":["name","category","cinemas","actors","price","status"],"page":5,"pagination":true}'>
+        <div class="table-responsive scrollbar">
+            <table class="table table-bordered table-striped fs-10 mb-0">
+                <thead class="bg-200">
+                    <tr>
+                        <th>#</th>
+                        <th class="sort" data-sort="name">Name</th>
+                        <th class="sort" data-sort="category">Category</th>
+                        <th class="sort" data-sort="cinemas">Cinemas</th>
+                        <th class="sort" data-sort="actors">Actors</th>
+                        <th class="sort" data-sort="price">Price</th>
+                        <th class="sort" data-sort="status">Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td class="name">@item.Name</td>
+                            <td class="category">@item.Category.Name</td>
+                            <td class="cinemas">
+                                @if (item.MovieCinemas.Any())
+                                {
+                                    @string.Join(", ", item.MovieCinemas.Select(c => c.Cinema.Name))
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Cinemas</span>
+                                }
+                            </td>
+                            <td class="actors">
+                                @if (item.MovieActors.Any())
+                                {
+                                    @string.Join(", ", item.MovieActors.Select(a => a.Actor.Name))
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Actors</span>
+                                }
+                            </td>
+                            <td class="price">@item.Price.ToString("c")</td>
+                            <td class="status">
+                                <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
+                                    @(item.Status ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown font-sans-serif position-static">
+                                    <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal" type="button" data-bs-toggle="dropdown">
+                                        <span class="fas fa-ellipsis-h fs-10"></span>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end border py-0">
+                                        <div class="py-2">
+                                            <a class="dropdown-item" href="/Admin/Movie/Details/@item.Id">View</a>
+                                            <a class="dropdown-item" href="/Admin/Movie/Edit/@item.Id">Edit</a>
+                                            <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="confirmDelete(@item.Id)">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="pagination d-none"></div>
+            <div class="col">
+                <p class="mb-0 fs-10">
+                    <span class="d-none d-sm-inline-block" data-list-info="data-list-info"></span>
+                    <span class="d-none d-sm-inline-block"> &mdash;</span>
+                    <a class="fw-semi-bold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1"></span></a>
+                    <a class="fw-semi-bold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1"></span></a>
+                </p>
+            </div>
+            <div class="col-auto d-flex">
+                <button class="btn btn-sm btn-primary" type="button" data-list-pagination="prev">Previous</button>
+                <button class="btn btn-sm btn-primary px-4 ms-2" type="button" data-list-pagination="next">Next</button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- SweetAlert Delete Confirmation -->
+<script>
+    function confirmDelete(movieId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This movie will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/Admin/Movie/Delete/${movieId}`;
+            }
+        });
+    }
+</script>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["SuccessMessage"]',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+}

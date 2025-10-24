@@ -53,6 +53,9 @@
         userLinkRTL.setAttribute('disabled', true);
       }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
   </head>
 
 
@@ -2255,6 +2258,32 @@
     <script src="~/vendors/lodash/lodash.min.js"></script>
     <script src="~/vendors/list.js/list.min.js"></script>
     <script src="~/assets/js/theme.js"></script>
+
+    <script>
+        function removeSocialLink(button) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This social link will be permanently deleted!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.parentElement.remove();
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'The social link has been removed.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+    </script>
 
   </body>
 

@@ -16,7 +16,6 @@ namespace CinemaSystem.Models
         public bool Status { get; set; }
 
         //public List<Movie> Movies { get; set; } = new();
-        public List<ActorCategory> ActorCategories { get; set; } = new();
 
     }
 }

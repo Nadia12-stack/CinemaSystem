@@ -47,7 +47,18 @@
     </div>
 </div>
 
-@* @section Scripts {
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["SuccessMessage"]',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+}
     <partial name="_NotificationPartial" />
     <partial name="_ValidationScriptsPartial" />
-} *@
+

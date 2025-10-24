@@ -4,6 +4,7 @@ using CinemaSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CinemaSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022210455_UpdateTableSocialLinkName")]
+    partial class UpdateTableSocialLinkName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,6 +60,32 @@ namespace CinemaSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
+                });
+
+            modelBuilder.Entity("CinemaSystem.Models.ActorCategory", b =>
+                {
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExperienceLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MainRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ActorId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("actorCategories");
                 });
 
             modelBuilder.Entity("CinemaSystem.Models.Category", b =>
@@ -141,7 +170,7 @@ namespace CinemaSystem.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<double?>("Rate")
+                    b.Property<double>("Rate")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("ReleaseDate")
@@ -217,6 +246,25 @@ namespace CinemaSystem.Migrations
                     b.ToTable("SocialLink", (string)null);
                 });
 
+            modelBuilder.Entity("CinemaSystem.Models.ActorCategory", b =>
+                {
+                    b.HasOne("CinemaSystem.Models.Actor", "Actor")
+                        .WithMany("ActorCategories")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CinemaSystem.Models.Category", "Category")
+                        .WithMany("ActorCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("CinemaSystem.Models.Movie", b =>
                 {
                     b.HasOne("CinemaSystem.Models.Category", "Category")
@@ -288,9 +336,16 @@ namespace CinemaSystem.Migrations
 
             modelBuilder.Entity("CinemaSystem.Models.Actor", b =>
                 {
+                    b.Navigation("ActorCategories");
+
                     b.Navigation("MovieActors");
 
                     b.Navigation("SocialLinks");
+                });
+
+            modelBuilder.Entity("CinemaSystem.Models.Category", b =>
+                {
+                    b.Navigation("ActorCategories");
                 });
 
             modelBuilder.Entity("CinemaSystem.Models.Cinema", b =>

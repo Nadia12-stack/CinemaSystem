@@ -29,8 +29,6 @@ namespace CinemaSystem.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(Actor actor, IFormFile? img)
         {
-            if (!ModelState.IsValid)
-                return View(actor);
 
             if (img is not null && img.Length > 0)
             {
@@ -43,6 +41,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             _context.Actors.Add(actor);
             _context.SaveChanges();
+            TempData["SuccessMessage"] = "Actor has been added successfully!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -63,8 +62,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
             if (actorInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            if (!ModelState.IsValid)
-                return View(actor);
+
 
             if (img is not null && img.Length > 0)
             {
@@ -86,6 +84,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             _context.Actors.Update(actor);
             _context.SaveChanges();
+            TempData["SuccessMessage"] = "Actor has been updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -103,5 +102,20 @@ namespace CinemaSystem.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult Details(int id)
+        {
+            var actor = _context.Actors
+                .Include(a => a.MovieActors)
+                    .ThenInclude(ma => ma.Movie)
+              
+                .Include(a => a.SocialLinks)
+                .FirstOrDefault(a => a.Id == id);
+
+            if (actor == null)
+                return NotFound();
+
+            return View(actor);
+        }
+
     }
 }

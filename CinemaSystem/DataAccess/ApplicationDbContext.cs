@@ -10,8 +10,7 @@ namespace CinemaSystem.DataAccess
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieActor> MovieActors { get; set; }
         public DbSet<MovieCinema> MovieCinema { get; set; }
-        public DbSet<SocialLink> socialLinks { get; set; }
-        public DbSet<ActorCategory> actorCategories { get; set; }
+        public DbSet<SocialLink> SocialLinks { get; set; }
         public DbSet<Actor> Actors { get; set; }
         public DbSet<MovieSubImage> MovieSubImages { get; set; }
 
@@ -36,6 +35,7 @@ namespace CinemaSystem.DataAccess
 
             modelBuilder.Entity<MovieCinema>().ToTable("MovieCinema");
             modelBuilder.Entity<MovieActor>().ToTable("MovieActor");
+            modelBuilder.Entity<SocialLink>().ToTable("SocialLink");
 
             base.OnModelCreating(modelBuilder);
         }

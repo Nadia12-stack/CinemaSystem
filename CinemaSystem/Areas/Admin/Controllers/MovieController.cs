@@ -70,12 +70,14 @@ namespace CinemaSystem.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Movie movie, IFormFile img, List<IFormFile>? subImgs, string[] actors)
+        public IActionResult Create(MovieVM movieVM, IFormFile img, List<IFormFile>? subImgs, string[] actors, List<int> cinemaIds)
         {
             var transaction = _context.Database.BeginTransaction();
 
             try
             {
+                var movie = movieVM.Movie!;
+
                 // Main Image
                 if (img is not null && img.Length > 0)
                 {
@@ -87,7 +89,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
                 }
 
                 // Save Movie
-                var movieCreated = _context.Movies.Add(movie);
+                _context.Movies.Add(movie);
                 _context.SaveChanges();
 
                 // Sub Images
@@ -96,17 +98,44 @@ namespace CinemaSystem.Areas.Admin.Controllers
                     foreach (var item in subImgs)
                     {
                         var fileName = Guid.NewGuid() + Path.GetExtension(item.FileName);
-                        var filePath = Path.Combine("wwwroot/images/movie_images", fileName);
+                        var filePath = Path.Combine("wwwroot/images/movieimages", fileName);
                         using var stream = System.IO.File.Create(filePath);
                         item.CopyTo(stream);
 
-                        _context.MovieSubImages.Add(new()
+                        _context.MovieSubImages.Add(new MovieSubImage
                         {
                             Img = fileName,
-                            MovieId = movieCreated.Entity.Id,
+                            MovieId = movie.Id
                         });
                     }
+                    _context.SaveChanges();
+                }
 
+                // Save Actors
+                if (actors is not null)
+                {
+                    foreach (var actorId in actors)
+                    {
+                        _context.MovieActors.Add(new MovieActor
+                        {
+                            ActorId = int.Parse(actorId),
+                            MovieId = movie.Id
+                        });
+                    }
+                    _context.SaveChanges();
+                }
+
+                // Save Cinemas
+                if (cinemaIds is not null)
+                {
+                    foreach (var cinemaId in cinemaIds)
+                    {
+                        _context.MovieCinema.Add(new MovieCinema
+                        {
+                            CinemaId = cinemaId,
+                            MovieId = movie.Id
+                        });
+                    }
                     _context.SaveChanges();
                 }
 
@@ -187,7 +216,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
                 foreach (var item in subImgs)
                 {
                     var fileName = Guid.NewGuid() + Path.GetExtension(item.FileName);
-                    var filePath = Path.Combine("wwwroot/images/movie_images", fileName);
+                    var filePath = Path.Combine("wwwroot/images/movieimages", fileName);
                     using var stream = System.IO.File.Create(filePath);
                     item.CopyTo(stream);
 
@@ -220,7 +249,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             foreach (var item in movie.movieSubImages)
             {
-                var subImgOldPath = Path.Combine("wwwroot/images/movie_images", item.Img);
+                var subImgOldPath = Path.Combine("wwwroot/images/movieimages", item.Img);
                 if (System.IO.File.Exists(subImgOldPath))
                     System.IO.File.Delete(subImgOldPath);
             }
@@ -240,7 +269,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
             if (movieSubImgInDb is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            var oldPath = Path.Combine("wwwroot/images/movie_images", movieSubImgInDb.Img);
+            var oldPath = Path.Combine("wwwroot/images/movieimages", movieSubImgInDb.Img);
             if (System.IO.File.Exists(oldPath))
                 System.IO.File.Delete(oldPath);
 

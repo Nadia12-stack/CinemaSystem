@@ -1,172 +1,177 @@
 ﻿@model MovieVM
-<link rel="stylesheet" href="~/css/movie.css" />
+@{
+    ViewData["Title"] = "Edit Movie";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
-<div class="container">
-    <h2 class="display-6 my-3">Edit Movie</h2>
+<div class="container mt-4">
+    <h4 class="mb-4 fw-bold">🎬 Edit Movie</h4>
 
-    <form method="post" enctype="multipart/form-data">
-        <input type="hidden" name="Id" value="@Model.Movie!.Id" />
-
-        <!-- Name -->
-        <div class="mb-3">
-            <label>Name</label>
-            <input class="form-control" name="Name" value="@Model.Movie.Name" />
+    <div class="card theme-wizard">
+        <div class="card-header bg-body-tertiary pt-3 pb-2">
+            <ul class="nav justify-content-between nav-wizard" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active fw-semi-bold" href="#step1" data-bs-toggle="tab" data-wizard-step="1" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-film"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Movie Info</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step2" data-bs-toggle="tab" data-wizard-step="2" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-images"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Media Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step3" data-bs-toggle="tab" data-wizard-step="3" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-people"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Cast & Cinemas</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step4" data-bs-toggle="tab" data-wizard-step="4" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-check2-circle"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Confirmation</span>
+                    </a>
+                </li>
+            </ul>
         </div>
 
-        <!-- Main Image -->
-        <div class="mb-3">
-            <label>Main Image</label>
-            <input class="form-control" type="file" name="img" onchange="previewImage(event)" />
-            <img id="preview" src="~/images/@Model.Movie.MainImg" style="max-width: 200px; margin-top:10px;" />
-        </div>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="Id" value="@Model.Movie!.Id" />
+            <div class="card-body py-4" id="wizard-controller">
+                <div class="tab-content">
 
-        <!-- Sub Images -->
-        @if (Model.MovieSubImages != null && Model.MovieSubImages.Any())
-        {
-            <div class="mb-3">
-                @foreach (var item in Model.MovieSubImages)
-                {
-                    <div style="display:inline-block; position:relative; margin-right:10px;">
-                        <img src="~/images/movie_images/@item.Img" style="width:150px; border-radius:10px;" />
-                        <a href="/Admin/Movie/DeleteSubImg?movieId=@Model.Movie.Id&Img=@item.Img" class="btn btn-sm btn-danger" style="position:absolute; top:5px; right:5px;">X</a>
+                    <!-- Step 1: Movie Info -->
+                    <div class="tab-pane active px-sm-3 px-md-5" role="tabpanel" id="step1">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input class="form-control" name="Name" value="@Model.Movie.Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="Description" rows="3">@Model.Movie.Description</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price</label>
+                                <input class="form-control" name="Price" value="@Model.Movie.Price" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Discount</label>
+                                <input class="form-control" name="Discount" value="@Model.Movie.Discount" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rate</label>
+                            <input class="form-control" name="Rate" value="@Model.Movie.Rate" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="Status" class="form-select">
+                                <option value="true @(Model.Movie.Status ? "selected" : "")">Active</option>
+                                <option value="false @(!Model.Movie.Status ? "selected" : "")">Inactive</option>
+
+                            </select>
+                        </div>
                     </div>
-                }
+
+                    <!-- Step 2: Media Upload -->
+                    <div class="tab-pane px-sm-3 px-md-5" role="tabpanel" id="step2">
+                        <div class="mb-3">
+                            <label class="form-label">Main Image</label>
+                            <input class="form-control" type="file" name="img" onchange="previewImage(event)" />
+                            <img id="preview" src="~/images/@Model.Movie.MainImg" style="max-width: 200px; margin-top:10px;" class="rounded" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sub Images</label>
+                            <input class="form-control" type="file" name="subImgs" multiple />
+                        </div>
+                        @if (Model.MovieSubImages != null && Model.MovieSubImages.Any())
+                        {
+                            <div class="card mb-3">
+                                <div class="card-header bg-body-tertiary">
+                                    <h5 class="mb-0">Current Sub Images</h5>
+                                </div>
+                                <div class="card-body overflow-hidden">
+                                    <div class="row g-0">
+                                        @foreach (var item in Model.MovieSubImages)
+                                        {
+                                            <div class="col-4 p-1 position-relative">
+                                                <img class="img-fluid rounded" src="~/images/movieimages/@item.Img" alt="..." />
+                                                <a href="/Admin/Movie/DeleteSubImg?movieId=@Model.Movie.Id&Img=@item.Img" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">X</a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Step 3: Cast & Cinemas -->
+                    <div class="tab-pane px-sm-3 px-md-5" role="tabpanel" id="step3">
+                        <div class="mb-3">
+                            <label class="form-label">Actors</label>
+                            <select name="actors" class="form-select" multiple>
+                                @foreach (var actor in Model.actors)
+                                {
+                                    var selected = Model.Movie.MovieActors.Any(a => a.ActorId == actor.Id) ? "selected" : "";
+                                    <option value="@actor.Id" selected>@actor.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cinemas</label>
+                            <select name="cinemaIds" class="form-select" multiple>
+                                @foreach (var cinema in Model.Cinemas)
+                                {
+                                    var selected = Model.Movie.MovieCinemas.Any(c => c.CinemaId == cinema.Id) ? "selected" : "";
+                                    <option value="@cinema.Id" selected>@cinema.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select name="CategoryId" class="form-select">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    var selected = category.Id == Model.Movie.CategoryId ? "selected" : "";
+                                    <option value="@category.Id" selected>@category.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmation -->
+                    <div class="tab-pane text-center px-sm-3 px-md-5" role="tabpanel" id="step4">
+                        <div class="wizard-lottie-wrapper">
+                            <div class="lottie wizard-lottie mx-auto my-3" data-options='{"path":"../../assets/img/animated-icons/celebration.json"}'></div>
+                        </div>
+                        <h4 class="mb-1">Ready to update this movie?</h4>
+                        <p>Click submit to save your changes.</p>
+                        <button type="submit" class="btn btn-primary px-5 my-3">Submit</button>
+                    </div>
+
+                </div>
             </div>
-        }
 
-        <!-- Description -->
-        <div class="mb-3">
-            <label>Description</label>
-            <textarea class="form-control" name="Description" style="height: 100px">@Model.Movie.Description</textarea>
-        </div>
-
-        <!-- Price -->
-        <div class="mb-3">
-            <label>Price</label>
-            <input class="form-control" name="Price" value="@Model.Movie.Price" />
-        </div>
-
-        <!-- Discount -->
-        <div class="mb-3">
-            <label>Discount</label>
-            <input class="form-control" name="Discount" value="@Model.Movie.Discount" />
-        </div>
-
-        <!-- Actors -->
-        <select name="actors" class="form-select" multiple>
-            @if (Model.actors != null)
-            {
-                foreach (var actor in Model.actors)
-                {
-                    if (Model.Movie.MovieActors != null)
-                    {
-                        bool isSelected = false;
-                        foreach (var a in Model.Movie.MovieActors)
-                        {
-                            if (a.ActorId == actor.Id)
-                            {
-                                isSelected = true;
-                                break;
-                            }
-                        }
-
-                        if (isSelected)
-                        {
-                            <option value="@actor.Id" selected>@actor.Name</option>
-                        }
-                        else
-                        {
-                            <option value="@actor.Id">@actor.Name</option>
-                        }
-                    }
-                    else
-                    {
-                        <option value="@actor.Id">@actor.Name</option>
-                    }
-                }
-            }
-        </select>
-
-
-        <!-- Cinemas -->
-        <select name="cinemaIds" class="form-select" multiple>
-            @if (Model.Cinemas != null)
-            {
-                foreach (var cinema in Model.Cinemas)
-                {
-                    if (Model.Movie.MovieCinemas != null)
-                    {
-                        bool isSelected = false;
-                        foreach (var c in Model.Movie.MovieCinemas)
-                        {
-                            if (c.CinemaId == cinema.Id)
-                            {
-                                isSelected = true;
-                                break;
-                            }
-                        }
-
-                        if (isSelected)
-                        {
-                            <option value="@cinema.Id" selected>@cinema.Name</option>
-                        }
-                        else
-                        {
-                            <option value="@cinema.Id">@cinema.Name</option>
-                        }
-                    }
-                    else
-                    {
-                        <option value="@cinema.Id">@cinema.Name</option>
-                    }
-                }
-            }
-        </select>
-
-
-
-        <!-- Category -->
-        <div class="col-md-2">
-
-            <select class="form-control" name="categoryId">
-                <option>--Category--</option>
-                @foreach (var item in Model.Categories)
-                    {
-                    if (item.Id == ViewBag.categoryId)
-                    {
-                        <option value="@item.Id" selected>@item.Name</option>
-                    }
-                    else
-                    {
-                        <option value="@item.Id">@item.Name</option>
-
-                    }
-                }
-            </select>
-        </div>
-
-        <!-- Status -->
-        <div class="mb-3">
-            <label>Status</label>
-            <select name="Status" class="form-select">
-                @if (Model.Movie.Status)
-                {
-                    <option value="true" selected>Active</option>
-                    <option value="false">Inactive</option>
-                }
-                else
-                {
-                    <option value="true">Active</option>
-                    <option value="false" selected>Inactive</option>
-                }
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+            <div class="card-footer bg-body-tertiary">
+                <div class="px-sm-3 px-md-5">
+                    <ul class="pager wizard list-inline mb-0">
+                        <li class="previous">
+                            <button class="btn btn-link ps-0" type="button">Prev</button>
+                        </li>
+                        <li class="next">
+                            <button class="btn btn-primary px-5 px-sm-6" type="button">Next</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- Preview Script -->
+<!-- Preview Main Image Script -->
 <script>
     function previewImage(event) {
         const input = event.target;
@@ -180,9 +185,46 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
-</script>
 
-@* @section Scripts {
-    <partial name="_NotificationPartial" />
-    <partial name="_ValidationScriptsPartial" />
-} *@
+    // Wizard Navigation (Next/Prev)
+    document.addEventListener("DOMContentLoaded", function () {
+        const tabs = document.querySelectorAll('.tab-pane');
+        const nextBtn = document.querySelector('.next button');
+        const prevBtn = document.querySelector('.previous button');
+        let currentStep = 0;
+
+        function showStep(index) {
+            tabs.forEach((tab, i) => {
+                tab.classList.remove('active');
+                if (i === index) tab.classList.add('active');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-wizard .nav-link');
+            navLinks.forEach((link, i) => {
+                link.classList.remove('active');
+                if (i === index) link.classList.add('active');
+            });
+
+            prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
+            nextBtn.innerHTML = index === tabs.length - 1 ? 'Finish' : 'Next';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < tabs.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                document.querySelector('form').submit();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+
+        showStep(currentStep);
+    });
+</script>

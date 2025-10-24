@@ -1,83 +1,157 @@
 ﻿@model IEnumerable<Actor>
-<link rel="stylesheet" href="~/css/actor.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold">👥 All Actors</h4>
         <a href="/Admin/Actor/Create" class="btn btn-success">➕ Add Actor</a>
     </div>
 
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Awards</th>
-                <th>Status</th>
-                <th>Birth Date</th>
-                <th>Nationality</th>
-                <th>Categories</th>
-                <th>Social Links</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Name</td>
-                    <td>@item.Description</td>
-                    <td>@item.Awards</td>
-                    <td>
-                        @if (item.Status)
+    <div class="row g-4">
+        @foreach (var actor in Model)
+        {
+            var collapseId = $"intro{actor.Id}";
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <!-- Header -->
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="~/images/actors/@actor.Img" alt="@actor.Name" class="rounded-circle me-3" style="width:70px; height:70px; object-fit:cover;" />
+                            <div>
+                                <h5 class="mb-0 fw-semibold">@actor.Name</h5>
+                                <span class="badge @(actor.Status ? "bg-success" : "bg-danger")">
+                                    @(actor.Status ? "Active" : "Inactive")
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Intro Card -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-body-tertiary">
+                                <h6 class="mb-0">Intro</h6>
+                            </div>
+                            <div class="card-body text-justify">
+                                <p class="mb-0 text-1000">@actor.Description</p>
+                                <div class="collapse" id="@collapseId">
+                                    <p class="mt-3 text-1000">@actor.Awards</p>
+                                    <p class="text-1000">Born: @actor.BirthDate.ToString("yyyy/MM/dd")</p>
+                                    <p class="text-1000 mb-0">Nationality: @actor.Nationality</p>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-body-tertiary p-0 border-top">
+                                <button class="btn btn-link d-block w-100" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#@collapseId"
+                                        aria-controls="@collapseId"
+                                        aria-expanded="false"
+                                        onclick="toggleText(this)">
+                                    <span class="toggle-text">Show More</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Social Links Card -->
+                        @if (actor.SocialLinks != null && actor.SocialLinks.Any())
                         {
-                            <span class="badge bg-success">Active</span>
+                            <div class="card mb-3">
+                                <div class="card-header bg-body-tertiary d-flex justify-content-between">
+                                    <h6 class="mb-0">Social Media</h6>
+                                    <span class="text-muted small">@actor.SocialLinks.Count link(s)</span>
+                                </div>
+                                <div class="card-body fs-10 pb-0">
+                                    <div class="row">
+                                        @foreach (var link in actor.SocialLinks)
+                                        {
+                                            var iconPath = link.Platform?.ToLower() switch
+                                            {
+                                                "facebook" => "/assets/logos/facebook.png",
+                                                "instagram" => "/assets/logos/instagram.png",
+                                                "twitter" => "/assets/logos/twitter.png",
+                                                "linkedin" => "/assets/logos/linkedin.png",
+                                                "youtube" => "/assets/logos/youtube.png",
+                                                _ => "/assets/logos/link.png"
+                                            };
+
+                                            <div class="col-sm-6 mb-3">
+                                                <div class="d-flex position-relative align-items-center mb-2">
+                                                    <img class="d-flex align-self-center me-2 rounded-3"
+                                                         src="@iconPath"
+                                                         alt="@link.Platform"
+                                                         width="50"
+                                                         title="@link.Platform" />
+                                                    <div class="flex-1">
+                                                        <h6 class="fs-9 mb-0">
+                                                            <a class="stretched-link" href="@link.Url" target="_blank">@link.Platform</a>
+                                                        </h6>
+                                                        <p class="mb-1 text-truncate">@link.Url</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         }
-                        else
-                        {
-                            <span class="badge bg-danger">Inactive</span>
-                        }
-                    </td>
-                    <td>@item.BirthDate.ToString("yyyy/MM/dd")</td>
-                    <td>@item.Nationality</td>
-                    <td>
-                        @if (item.ActorCategories.Any())
-                        {
-                            <ul class="list-unstyled mb-0">
-                                @foreach (var cat in item.ActorCategories)
-                                {
-                                    <li>@cat.Category.Name</li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <span class="text-muted">None</span>
-                        }
-                    </td>
-                    <td>
-                        @if (item.SocialLinks.Any())
-                        {
-                            <ul class="list-unstyled mb-0">
-                                @foreach (var link in item.SocialLinks)
-                                {
-                                    <li><a href="@link.Url" target="_blank">@link.Platform</a></li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <span class="text-muted">None</span>
-                        }
-                    </td>
-                    <td>
-                        <a href="/Admin/Actor/Edit/@item.Id" class="btn btn-sm btn-warning">✏️ Edit</a>
-                        <a href="/Admin/Actor/Delete/@item.Id" class="btn btn-sm btn-danger btn-delete">🗑️ Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+                        <a href="/Admin/Actor/Edit/@actor.Id" class="btn btn-sm btn-info">✏️ Edit</a>
+                        <button class="btn btn-danger" onclick="confirmDelete(@actor.Id)">🗑️ Delete</button>
+                        <a class="dropdown-item" href="/Admin/Actor/Details/@actor.Id">View</a>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+
+<script>
+    function toggleText(button) {
+        const span = button.querySelector(".toggle-text");
+        const targetId = button.getAttribute("data-bs-target");
+        const target = document.querySelector(targetId);
+
+        setTimeout(() => {
+            const isVisible = target.classList.contains("show");
+            span.textContent = isVisible ? "Show Less" : "Show More";
+        }, 300);
+    }
+
+</script>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["SuccessMessage"]',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+}
+
+<script>
+    function confirmDelete(actorId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This actor will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/Actors/Delete/${actorId}`;
+            }
+        });
+    }
+</script>
+

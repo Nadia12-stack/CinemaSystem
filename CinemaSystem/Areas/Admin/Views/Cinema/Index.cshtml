@@ -47,8 +47,8 @@
     </div>
 </div>
 
-@* @section Scripts {
-    <partial name="_NotificationPartial" /> *@
+
+    <partial name="_NotificationPartial" /> 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const deleteButtons = document.querySelectorAll(".btn-delete");
@@ -78,4 +78,17 @@
             });
         });
     </script>
-@* } *@
+
+@if (TempData["success-notification"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["success-notification"]',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+}
+

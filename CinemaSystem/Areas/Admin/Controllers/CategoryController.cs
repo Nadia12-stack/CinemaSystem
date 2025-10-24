@@ -38,7 +38,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
             _context.Categories.Add(category);
             _context.SaveChanges();
 
-            //return View(nameof(Index));
+            TempData["SuccessMessage"] = "Category has been added successfully!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -65,7 +65,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             _context.Categories.Update(category);
             _context.SaveChanges();
-
+            TempData["SuccessMessage"] = "Category has been updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
