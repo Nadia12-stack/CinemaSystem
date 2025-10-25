@@ -1,167 +1,169 @@
-﻿@model IEnumerable<Movie>
-@using CinemaSystem.ViewModels
+﻿@model MovieVM
 @{
-    var filter = ViewBag.Filter as FilterMovieVM;
-    var categories = ViewBag.Categories as SelectList;
-    var cinemas = ViewBag.Cinemas as SelectList;
-    int currentPage = ViewBag.CurrentPage ?? 1;
-    int totalPages = ViewBag.TotalPages ?? 1;
+    ViewData["Title"] = "Create Movie";
 }
-
-<link rel="stylesheet" href="~/css/movie.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container mt-4">
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <h4 class="fw-bold">🎬 All Movies</h4>
-        </div>
-        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
-            <a href="/Admin/Movie/Create" class="btn btn-success">➕ Create</a>
-        </div>
-    </div>
+    <h4 class="mb-4 fw-bold">➕ Create New Movie</h4>
 
-    <!-- Filter Form -->
-    <form method="get" class="row g-2 mb-4">
-        <div class="col-md-4">
-            <input type="text" name="name" value="@filter?.name" class="form-control" placeholder="Search by name..." />
-        </div>
-        <div class="col-md-4">
-            <select name="categoryId" class="form-select">
-                <option value="">-- Filter by Category --</option>
-                @foreach (var cat in categories)
-                {
-                    <option value="@cat.Value @(filter?.categoryId?.ToString() == cat.Value ? "selected" : "")">@cat.Text</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-4">
-            <select name="cinemaId" class="form-select">
-                <option value="">-- Filter by Cinema --</option>
-                @foreach (var cin in cinemas)
-                {
-                    <option value="@cin.Value @(filter?.cinemaId?.ToString() == cin.Value ? "selected" : "")">@cin.Text</option>
-                }
-            </select>
-        </div>
-        <div class="col-12 text-end">
-            <button type="submit" class="btn btn-primary">🔍 Filter</button>
-            <a href="/Admin/Movie/Index" class="btn btn-outline-secondary">Reset</a>
-        </div>
-    </form>
-
-    <div id="movieTable">
-        <div class="table-responsive scrollbar">
-            <table class="table table-bordered table-striped fs-10 mb-0">
-                <thead class="bg-200">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Cinemas</th>
-                        <th>Actors</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Name</td>
-                            <td>@item.Category?.Name</td>
-                            <td>
-                                @if (item.MovieCinemas.Any())
-                                {
-                                    @string.Join(", ", item.MovieCinemas.Select(c => c.Cinema.Name))
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No Cinemas</span>
-                                }
-                            </td>
-                            <td>
-                                @if (item.MovieActors.Any())
-                                {
-                                    @string.Join(", ", item.MovieActors.Select(a => a.Actor.Name))
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No Actors</span>
-                                }
-                            </td>
-                            <td>@item.Price.ToString("c")</td>
-                            <td>
-                                <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
-                                    @(item.Status ? "Active" : "Inactive")
-                                </span>
-                            </td>
-                            <td class="text-end">
-                                <div class="dropdown font-sans-serif position-static">
-                                    <button class="btn btn-link text-600 btn-sm dropdown-toggle btn-reveal" type="button" data-bs-toggle="dropdown">
-                                        <span class="fas fa-ellipsis-h fs-10"></span>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end border py-0">
-                                        <div class="py-2">
-                                            <a class="dropdown-item" href="/Admin/Movie/Details/@item.Id">View</a>
-                                            <a class="dropdown-item" href="/Admin/Movie/Edit/@item.Id">Edit</a>
-                                            <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="confirmDelete(@item.Id)">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <nav class="mt-4">
-            <ul class="pagination justify-content-center">
-                @for (int i = 1; i <= totalPages; i++)
-                {
-                    <li class="page-item @(i == currentPage ? "active" : "")">
-                        <a class="page-link" href="?page=@i&name=@filter?.name&categoryId=@filter?.categoryId&cinemaId=@filter?.cinemaId">@i</a>
-                    </li>
-                }
+    <div class="card theme-wizard">
+        <div class="card-header bg-body-tertiary pt-3 pb-2">
+            <ul class="nav justify-content-between nav-wizard" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active fw-semi-bold" href="#step1" data-bs-toggle="tab" data-wizard-step="1" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-film"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Movie Info</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step2" data-bs-toggle="tab" data-wizard-step="2" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-images"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Media Upload</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step3" data-bs-toggle="tab" data-wizard-step="3" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-people"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Cast & Cinemas</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-semi-bold" href="#step4" data-bs-toggle="tab" data-wizard-step="4" role="tab">
+                        <span class="nav-item-circle-parent"><span class="nav-item-circle"><i class="bi bi-check2-circle"></i></span></span>
+                        <span class="d-none d-md-block mt-1 fs-10">Confirmation</span>
+                    </a>
+                </li>
             </ul>
-        </nav>
+        </div>
+
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div class="card-body py-4" id="wizard-controller">
+                <div class="tab-content">
+
+                    <!-- Step 1: Movie Info -->
+                    <div class="tab-pane active px-sm-3 px-md-5" role="tabpanel" id="step1">
+                        <div class="mb-3">
+                            <label asp-for="Movie.Name" class="form-label" >Name</label>
+                            <input asp-for="Movie.Name" class="form-control" />
+                            <span asp-validation-for="Movie.Name" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Movie.Description" class="form-label">Description</label>
+                            <textarea asp-for="Movie.Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Movie.Description" class="text-danger small"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Movie.Price" class="form-label">Price</label>
+                                <input asp-for="Movie.Price" class="form-control" />
+                                <span asp-validation-for="Movie.Price" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Movie.Discount" class="form-label">Discount</label>
+                                <input asp-for="Movie.Discount" class="form-control" />
+                                <span asp-validation-for="Movie.Discount" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Movie.Rate" class="form-label">Rate</label>
+                            <input asp-for="Movie.Rate" class="form-control" />
+                            <span asp-validation-for="Movie.Rate" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Movie.Status" class="form-label">Status</label>
+                            <select asp-for="Movie.Status" class="form-select">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                            <span asp-validation-for="Movie.Status" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Media Upload -->
+                    <div class="tab-pane px-sm-3 px-md-5" role="tabpanel" id="step2">
+                        <div class="mb-3">
+                            <label class="form-label">Main Image</label>
+                            <input class="form-control" type="file" name="img" onchange="previewImage(event)" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sub Images</label>
+                            <input class="form-control" type="file" name="subImgs" multiple />
+                        </div>
+                        <img id="preview" style="max-width: 200px; margin-top:10px;" class="rounded d-none" />
+                    </div>
+
+                    <!-- Step 3: Cast & Cinemas -->
+                    <div class="tab-pane px-sm-3 px-md-5" role="tabpanel" id="step3">
+                        <div class="mb-3">
+                            <label class="form-label">Actors</label>
+                            <select name="actors" class="form-select" multiple required>
+                                @foreach (var actor in Model.actors)
+                                {
+                                    <option value="@actor.Id">@actor.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cinemas</label>
+                            <select name="cinemaIds" class="form-select" multiple required>
+                                @foreach (var cinema in Model.Cinemas)
+                                {
+                                    <option value="@cinema.Id" >@cinema.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select asp-for="Movie.CategoryId" class="form-select" required>
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Movie.CategoryId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmation -->
+                    <div class="tab-pane text-center px-sm-3 px-md-5" role="tabpanel" id="step4">
+                        <div class="wizard-lottie-wrapper">
+                            <div class="lottie wizard-lottie mx-auto my-3" data-options='{"path":"~/assets/img/animated-icons/celebration.json"}'></div>
+                        </div>
+                        <h4 class="mb-1">Ready to create this movie?</h4>
+                        <p>Click submit to save your movie.</p>
+                        <button type="submit" class="btn btn-success px-5 my-3">Submit</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-footer bg-body-tertiary">
+                <div class="px-sm-3 px-md-5">
+                    <ul class="pager wizard list-inline mb-0">
+                        <li class="previous">
+                            <button class="btn btn-link ps-0" type="button">Prev</button>
+                        </li>
+                        <li class="next">
+                            <button class="btn btn-primary px-5 px-sm-6" type="button">Next</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- SweetAlert Delete Confirmation -->
-<script>
-    function confirmDelete(movieId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'This movie will be permanently deleted!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `/Admin/Movie/Delete/${movieId}`;
-            }
-        });
-    }
-</script>
 
-@if (TempData["SuccessMessage"] != null)
-{
+    @* <partial name="_ValidationScriptsPartial" /> *@
     <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: '@TempData["SuccessMessage"]',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.classList.remove('d-none');
+        }
     </script>
-}
+
+
+

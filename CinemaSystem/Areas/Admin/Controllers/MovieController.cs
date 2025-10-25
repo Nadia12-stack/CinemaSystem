@@ -38,10 +38,13 @@ namespace CinemaSystem.Areas.Admin.Controllers
             var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
 
             var movies = moviesQuery
-                .OrderByDescending(m => m.CreatedAt)
+                .Include(m => m.Category)
+                .Include(m => m.MovieCinemas).ThenInclude(mc => mc.Cinema)
+                .Include(m => m.MovieActors).ThenInclude(ma => ma.Actor)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+
 
             ViewBag.Filter = filterMovieVM;
             ViewBag.TotalMovies = totalMovies;
