@@ -78,11 +78,10 @@
             </div>
         </div>
     }
-
     <!-- Social Links -->
     @if (Model.SocialLinks != null && Model.SocialLinks.Any())
     {
-        <div class="card mb-3">
+        <div class="card mt-4 mb-3">
             <div class="card-header bg-body-tertiary d-flex justify-content-between">
                 <h5 class="mb-0">Social Links</h5>
             </div>
@@ -92,12 +91,12 @@
                     {
                         <div class="col-sm-6 mb-3">
                             <div class="d-flex position-relative align-items-center mb-2">
-                                <img src="~/assets/img/logos/@(link.Platform.ToLower().Trim().Replace(" ", "")).png" alt="" width="50" />
+                                <img class="d-flex align-self-center me-2 rounded-3" src="~/assets/img/logos/@link.Platform" alt="" width="50" />
                                 <div class="flex-1">
                                     <h6 class="fs-9 mb-0">
-                                        <a class="stretched-link" href="@link.Url" target="_blank">@link.Platform</a>
+                                        <a class="stretched-link" href="@link.Url" target="_blank">@link.Actor.Name</a>
                                     </h6>
-                                    <p class="mb-1">@link.Url</p>
+                                    <p class="mb-1">@link.Actor.Description</p>
                                 </div>
                             </div>
                         </div>
@@ -107,4 +106,16 @@
         </div>
     }
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        raterJs({
+            starSize: 32,
+            step: 0.5,
+            
+            readOnly: true,
+           
+        });
+    });
+</script>
 

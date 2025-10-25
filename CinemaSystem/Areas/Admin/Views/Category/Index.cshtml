@@ -35,9 +35,10 @@
                                 <a href="/Admin/Category/Edit/@item.Id" class="btn btn-sm btn-warning me-1" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="/Admin/Category/Delete/@item.Id" class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                <a href="javascript:void(0);" class="btn btn-sm btn-danger btn-delete" data-id="@item.Id" title="Delete">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
+
                             </td>
                         </tr>
                     }
@@ -59,6 +60,31 @@
         });
     </script>
 }
-    <partial name="_NotificationPartial" />
-    <partial name="_ValidationScriptsPartial" />
+    
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".btn-delete");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const categoryId = this.getAttribute("data-id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This category will be permanently deleted!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Admin/Category/Delete/${categoryId}`;
+                    }
+                });
+            });
+        });
+    });
+</script>
 

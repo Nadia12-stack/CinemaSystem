@@ -15,7 +15,7 @@ namespace CinemaSystem.ViewModels
         public IEnumerable<MovieCinema> movieCinemas { get; set; } = null!;
         public IEnumerable<MovieSubImage> MovieSubImages { get; set; } = null!;
         public List<Actor>? Actor { get; internal set; }
-        public IEnumerable<SelectListItem>? CategoryList { get; set; }
+        public IEnumerable<SelectListItem> CategoryList { get; set; } = null!;
 
     }
 }

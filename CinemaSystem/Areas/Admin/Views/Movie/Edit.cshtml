@@ -71,7 +71,6 @@
                             <select name="Status" class="form-select">
                                 <option value="true @(Model.Movie.Status ? "selected" : "")">Active</option>
                                 <option value="false @(!Model.Movie.Status ? "selected" : "")">Inactive</option>
-
                             </select>
                         </div>
                     </div>
@@ -87,6 +86,7 @@
                             <label class="form-label">Sub Images</label>
                             <input class="form-control" type="file" name="subImgs" multiple />
                         </div>
+
                         @if (Model.MovieSubImages != null && Model.MovieSubImages.Any())
                         {
                             <div class="card mb-3">
@@ -145,7 +145,7 @@
                     <!-- Step 4: Confirmation -->
                     <div class="tab-pane text-center px-sm-3 px-md-5" role="tabpanel" id="step4">
                         <div class="wizard-lottie-wrapper">
-                            <div class="lottie wizard-lottie mx-auto my-3" data-options='{"path":"../../assets/img/animated-icons/celebration.json"}'></div>
+                            <div class="lottie wizard-lottie mx-auto my-3" data-options='{"path":"~/assets/img/animated-icons/celebration.json"}'></div>
                         </div>
                         <h4 class="mb-1">Ready to update this movie?</h4>
                         <p>Click submit to save your changes.</p>
@@ -171,60 +171,47 @@
     </div>
 </div>
 
-<!-- Preview Main Image Script -->
+
 <script>
     function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById("preview");
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+        const preview = document.getElementById('preview');
+        preview.src = URL.createObjectURL(event.target.files[0]);
+        preview.classList.remove('d-none');
     }
 
-    // Wizard Navigation (Next/Prev)
+    // Wizard navigation logic
     document.addEventListener("DOMContentLoaded", function () {
-        const tabs = document.querySelectorAll('.tab-pane');
+        const tabs = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
         const nextBtn = document.querySelector('.next button');
         const prevBtn = document.querySelector('.previous button');
+
         let currentStep = 0;
 
         function showStep(index) {
-            tabs.forEach((tab, i) => {
-                tab.classList.remove('active');
-                if (i === index) tab.classList.add('active');
-            });
-
-            const navLinks = document.querySelectorAll('.nav-wizard .nav-link');
-            navLinks.forEach((link, i) => {
-                link.classList.remove('active');
-                if (i === index) link.classList.add('active');
-            });
-
-            prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
-            nextBtn.innerHTML = index === tabs.length - 1 ? 'Finish' : 'Next';
+            tabs[currentStep].classList.remove('active');
+            tabs[index].classList.add('active');
+            const tabId = tabs[index].getAttribute('href');
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelector(tabId).classList.add('active');
+            currentStep = index;
         }
 
-        nextBtn.addEventListener('click', () => {
+        nextBtn.addEventListener('click', function () {
             if (currentStep < tabs.length - 1) {
-                currentStep++;
-                showStep(currentStep);
-            } else {
-                document.querySelector('form').submit();
+                showStep(currentStep + 1);
             }
         });
 
-        prevBtn.addEventListener('click', () => {
+        prevBtn.addEventListener('click', function () {
             if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
+                showStep(currentStep - 1);
             }
         });
 
-        showStep(currentStep);
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', function () {
+                showStep(index);
+            });
+        });
     });
 </script>

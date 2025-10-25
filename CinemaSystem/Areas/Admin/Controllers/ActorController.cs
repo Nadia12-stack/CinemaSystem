@@ -14,12 +14,27 @@ namespace CinemaSystem.Areas.Admin.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var actors = _context.Actors.AsNoTracking().ToList();
+            int pageSize = 11;
+
+            var totalActors = _context.Actors.Count();
+
+            var actors = _context.Actors
+                .Include(a => a.MovieActors).ThenInclude(ma => ma.Movie)
+                .Include(a => a.SocialLinks)
+                .AsNoTracking()
+                .OrderBy(a => a.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalActors / pageSize);
+            ViewBag.TotalActors = totalActors;
+
             return View(actors);
         }
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -102,12 +117,12 @@ namespace CinemaSystem.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Details(int id)
         {
             var actor = _context.Actors
                 .Include(a => a.MovieActors)
                     .ThenInclude(ma => ma.Movie)
-              
                 .Include(a => a.SocialLinks)
                 .FirstOrDefault(a => a.Id == id);
 
@@ -116,6 +131,7 @@ namespace CinemaSystem.Areas.Admin.Controllers
 
             return View(actor);
         }
+
 
     }
 }
