@@ -34,7 +34,6 @@
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Include="Areas\Admin\Views\Home\changelog.cshtml" />
 	  <None Include="Areas\Admin\Views\Home\index.cshtml" />
 	  <None Include="Areas\Admin\Views\Home\widgets.cshtml" />
 	</ItemGroup>

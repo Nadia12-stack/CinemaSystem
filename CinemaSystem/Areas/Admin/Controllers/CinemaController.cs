@@ -16,17 +16,11 @@ namespace CinemaSystem.Areas.Admin.Controllers
         }
 
         public IActionResult Index()
-        {
-            var cinemas = _context.Cinemas.AsNoTracking()
-                .Select(e => new
-                {
-                    e.Id,
-                    e.Name,
-                    e.Description,
-                    e.Status,
-                }).ToList();
+        {;
+            var cinemas = _context.Cinemas.AsNoTracking().AsQueryable();
+             
 
-            return View(cinemas);
+            return View(cinemas.AsEnumerable());
         }
 
         [HttpGet]
